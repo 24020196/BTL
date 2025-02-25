@@ -1,0 +1,33 @@
+# depslib dependency file v1.0
+1740495088 source:c:\users\pc\desktop\game\game\main.cpp
+	<bits/stdc++.h>
+	<SDL.h>
+	"SDL_image.h"
+	"khoitao.h"
+	"menu.h"
+	"game.h"
+
+1740152109 c:\users\pc\desktop\game\game\khoitao.h
+
+1740495501 source:c:\users\pc\desktop\game\game\khoitao.cpp
+	<bits/stdc++.h>
+	<SDL.h>
+
+1740502766 source:c:\users\pc\desktop\game\game\menu.cpp
+	<bits/stdc++.h>
+	<SDL.h>
+	"SDL_image.h"
+	"khoitao.h"
+
+1740233660 c:\users\pc\desktop\game\game\menu.h
+
+1740504162 source:c:\users\pc\desktop\game\game\game.cpp
+	<bits/stdc++.h>
+	<SDL.h>
+	"SDL_image.h"
+	"khoitao.h"
+
+1740369225 c:\users\pc\desktop\game\game\game.h
+
+1740408183 c:\users\pc\desktop\game\game\game_button.h
+
