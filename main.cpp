@@ -18,12 +18,13 @@ int main(int argc, char* argv[])
 
     while(true){
         renmenu(window,renderer);
-        menuevent(window,renderer);
+
         int dokho;
         ifstream file("temp.txt");
         file>>dokho;
         file.close();
         loopgame(window,renderer,dokho);
+
     }
     return 0;
 }
