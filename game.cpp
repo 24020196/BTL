@@ -7,9 +7,14 @@
 using namespace std;
 
 
-int scroll_pos=0,doi=1,enemy_doi=1,coinLenDoi[3]={0,200,400},coin=50,enemy_coin=0;
+int scroll_pos=0,doi=1,enemy_doi=1,coinLenDoi[3]={0,200,400},coin=50;
+double enemy_coin=0;
 int L1[4]={0,10,20,40},L2[4]={0,20,40,80},L3[4]={0,20,40,150};
 int maunhachinh=100,maunhachinh_enemy=100,maunhachinhmax[4]={0,100,250,500};
+int cooldownlinh=0,cooldownenemy=0;
+
+SDL_Texture *png_cooldown2,*png_cooldown1,*png_coin,*png_up,*png_gamebg,*png_gamemenu,*png_L1,*png_L2,*png_L3;
+
 SDL_Rect rect,rect1,r;
 struct info
 {
@@ -84,8 +89,6 @@ void button_L1(SDL_Window* window,SDL_Renderer* renderer)
         linh.push_back(temp);
 
 
-        temp.x=2082;
-        enemy_linh.push_back(temp);
     }
 }
 
@@ -156,9 +159,6 @@ void button_L3(SDL_Window* window,SDL_Renderer* renderer)
         temp.y=585;
         linh.push_back(temp);
 
-
-        temp.x=2082;
-        enemy_linh.push_back(temp);
     }
 }
 
@@ -182,10 +182,12 @@ void event(SDL_Window* window,SDL_Renderer* renderer)
             case SDL_MOUSEBUTTONDOWN:{
 
                 Uint32 buttons = SDL_GetMouseState(&mouse.x, &mouse.y);
-
-                button_L1(window,renderer);
-                button_L2(window,renderer);
-                button_L3(window,renderer);
+                if(cooldownlinh<=0){
+                    button_L1(window,renderer);
+                    button_L2(window,renderer);
+                    button_L3(window,renderer);
+                    cooldownlinh=60;
+                }
                 button_Lendoi(window,renderer);
 
                 break;
@@ -219,21 +221,17 @@ void renmap(SDL_Window* window,SDL_Renderer* renderer)
     rect.y=0;
     rect.w=2250;
     rect.h=750;
-    SDL_Texture* bg = IMG_LoadTexture(renderer,"gamebg.png");
-    SDL_RenderCopy(renderer,bg,NULL,&rect);
-    bg = IMG_LoadTexture(renderer,"gamemenu.png");
+    SDL_RenderCopy(renderer,png_gamebg,NULL,&rect);
     rect.x=-2;
     rect.y=0;
     rect.w=1504;
     rect.h=230;
-    SDL_RenderCopy(renderer,bg,NULL,&rect);
-    SDL_DestroyTexture(bg);
+    SDL_RenderCopy(renderer,png_gamemenu,NULL,&rect);
 
 }
 
 void rengamemenu(SDL_Window* window,SDL_Renderer* renderer)
 {
-    SDL_Texture* bg;
 
 
     rect.y=24;
@@ -244,16 +242,14 @@ void rengamemenu(SDL_Window* window,SDL_Renderer* renderer)
     rect1.w=20;
     rect1.h=20;
 
-    char a=char(48+doi);
-    string st="D";
-    st=st+a+"L1.png";
+
 
     rect.x=202;
     rect1.x=202;
-    bg = IMG_LoadTexture(renderer,st.c_str());
-    SDL_RenderCopy(renderer,bg,NULL,&rect);
-    bg = IMG_LoadTexture(renderer,"coin.png");
-    SDL_RenderCopy(renderer,bg,NULL,&rect1);
+    if(cooldownlinh>15)SDL_RenderCopy(renderer,png_cooldown2,NULL,&rect);
+    else if(cooldownlinh>=0)SDL_RenderCopy(renderer,png_cooldown1,NULL,&rect);
+    else SDL_RenderCopy(renderer,png_L1,NULL,&rect);
+    SDL_RenderCopy(renderer,png_coin,NULL,&rect1);
     if(doi==1)renso(window,renderer,rect1,10);else
     if(doi==2)renso(window,renderer,rect1,20);else
     if(doi==3)renso(window,renderer,rect1,40);
@@ -261,11 +257,10 @@ void rengamemenu(SDL_Window* window,SDL_Renderer* renderer)
 
     rect.x=306;
     rect1.x=306;
-    st[3]='2';
-    bg = IMG_LoadTexture(renderer,st.c_str());
-    SDL_RenderCopy(renderer,bg,NULL,&rect);
-    bg = IMG_LoadTexture(renderer,"coin.png");
-    SDL_RenderCopy(renderer,bg,NULL,&rect1);
+    if(cooldownlinh>15)SDL_RenderCopy(renderer,png_cooldown2,NULL,&rect);
+    else if(cooldownlinh>=0)SDL_RenderCopy(renderer,png_cooldown1,NULL,&rect);
+    else SDL_RenderCopy(renderer,png_L2,NULL,&rect);
+    SDL_RenderCopy(renderer,png_coin,NULL,&rect1);
     if(doi==1)renso(window,renderer,rect1,20);else
     if(doi==2)renso(window,renderer,rect1,40);else
     if(doi==3)renso(window,renderer,rect1,80);
@@ -273,11 +268,10 @@ void rengamemenu(SDL_Window* window,SDL_Renderer* renderer)
 
     rect.x=410;
     rect1.x=410;
-    st[3]='3';
-    bg = IMG_LoadTexture(renderer,st.c_str());
-    SDL_RenderCopy(renderer,bg,NULL,&rect);
-    bg = IMG_LoadTexture(renderer,"coin.png");
-    SDL_RenderCopy(renderer,bg,NULL,&rect1);
+    if(cooldownlinh>15)SDL_RenderCopy(renderer,png_cooldown2,NULL,&rect);
+    else if(cooldownlinh>=0)SDL_RenderCopy(renderer,png_cooldown1,NULL,&rect);
+    else SDL_RenderCopy(renderer,png_L3,NULL,&rect);
+    SDL_RenderCopy(renderer,png_coin,NULL,&rect1);
     if(doi==1)renso(window,renderer,rect1,20);else
     if(doi==2)renso(window,renderer,rect1,40);else
     if(doi==3)renso(window,renderer,rect1,150);
@@ -286,10 +280,8 @@ void rengamemenu(SDL_Window* window,SDL_Renderer* renderer)
     rect.x=514;
     rect1.x=514;
     if(doi<3){
-    bg = IMG_LoadTexture(renderer,"up.png");
-    SDL_RenderCopy(renderer,bg,NULL,&rect);
-    bg = IMG_LoadTexture(renderer,"coin.png");
-    SDL_RenderCopy(renderer,bg,NULL,&rect1);
+        SDL_RenderCopy(renderer,png_up,NULL,&rect);
+        SDL_RenderCopy(renderer,png_coin,NULL,&rect1);
     }
     if(doi==1)renso(window,renderer,rect1,200);else
     if(doi==2)renso(window,renderer,rect1,400);
@@ -300,7 +292,6 @@ void rengamemenu(SDL_Window* window,SDL_Renderer* renderer)
     r.h=25;
     renso(window,renderer,r,coin);
 
-    SDL_DestroyTexture(bg);
 }
 
 void renmaunhachinh(SDL_Window* window,SDL_Renderer* renderer)
@@ -433,7 +424,7 @@ void renenemylinh(SDL_Window* window,SDL_Renderer* renderer)
 
         if(templinh.mau<=0)
         {
-
+            coin+=2*enemy_linh.front().coin;
             enemy_linh.erase(enemy_linh.begin());
         }
         if(templinh.file[17]=='9')
@@ -491,28 +482,157 @@ void renenemylinh(SDL_Window* window,SDL_Renderer* renderer)
 
 }
 
-
-
-void loopgame(SDL_Window* window,SDL_Renderer* renderer)
+void AI()
 {
+    cout<<enemy_doi<<' '<<enemy_coin<<endl;
+    if(cooldownenemy<=0)
+    {
+        int randlinh=rand()%3+1;
+        if(!linh.empty()&&linh.front().x>1500)cooldownenemy=60;
+        else if(!linh.empty()&&linh.front().x<750)cooldownenemy=120;
+        else cooldownenemy=90;
+        if(randlinh==1)
+        if(L1[enemy_doi]<=enemy_coin)
+        {
+            enemy_coin-=L1[enemy_doi];
+            info temp;
+            temp.file="D1/L1/L1T0D1_00000.png";
+            temp.file[1]+=doi-1;
+            temp.file[11]+=doi-1;
+            temp.tamdanh=0;
+            if(doi==1){
+                temp.mau=30;
+                temp.dame=10;
+                temp.coin=10;
+            }else
+            if(doi==2){
+                temp.mau=60;
+                temp.dame=15;
+                temp.coin=20;
+            }else
+            if(doi==3){
+                temp.mau=120;
+                temp.dame=20;
+                temp.coin=40;
+            }
+            temp.status=0;
+            temp.y=585;
+
+            temp.x=2082;
+            enemy_linh.push_back(temp);
+        }else cooldownenemy=10;
+        if(randlinh==2)
+        if(L2[enemy_doi]<=enemy_coin)
+        {
+            enemy_coin-=L2[enemy_doi];
+            info temp;
+            temp.file="D1/L2/L2T0D1_00000.png";
+            temp.file[1]+=doi-1;
+            temp.file[11]+=doi-1;
+            temp.tamdanh=0;
+            if(doi<3)temp.tamdanh=0;else temp.tamdanh=80;
+            if(doi==1){
+                temp.mau=50;
+                temp.dame=10;
+                temp.coin=20;
+            }else
+            if(doi==2){
+                temp.mau=120;
+                temp.dame=15;
+                temp.coin=40;
+            }else
+            if(doi==3){
+                temp.mau=120;
+                temp.dame=30;
+                temp.coin=80;
+            }
+            temp.status=0;
+            temp.y=585;
+
+            temp.x=2082;
+            enemy_linh.push_back(temp);
+        }else cooldownenemy=10;
+        if(randlinh==3)
+        if(L3[enemy_doi]<=enemy_coin)
+        {
+            enemy_coin-=L3[enemy_doi];
+            info temp;
+            temp.file="D1/L3/L3T0D1_00000.png";
+            temp.file[1]+=doi-1;
+            temp.file[11]+=doi-1;
+            temp.tamdanh=0;
+            if(doi==1){
+                temp.mau=30;
+                temp.dame=15;
+                temp.coin=20;
+                temp.tamdanh=50;
+            }else
+            if(doi==2){
+                temp.mau=60;
+                temp.dame=20;
+                temp.coin=40;
+                temp.tamdanh=50;
+            }else
+            if(doi==3){
+                temp.mau=200;
+                temp.dame=40;
+                temp.coin=150;
+                temp.tamdanh=180;
+            }
+            temp.status=0;
+            temp.y=585;
+
+            temp.x=2082;
+            enemy_linh.push_back(temp);
+        }else cooldownenemy=10;
+
+    }
+}
+
+void loopgame(SDL_Window* window,SDL_Renderer* renderer,int dokho)
+{
+    {
+        string st="D1L1.png";
+        png_L1=IMG_LoadTexture(renderer,st.c_str());
+        st="D1L2.png";
+        png_L2=IMG_LoadTexture(renderer,st.c_str());
+        st="D1L3.png";
+        png_L3=IMG_LoadTexture(renderer,st.c_str());
+        png_gamebg=IMG_LoadTexture(renderer,"gamebg.png");
+        png_gamemenu=IMG_LoadTexture(renderer,"gamemenu.png");
+        png_cooldown1=IMG_LoadTexture(renderer,"cooldown1.png");
+        png_cooldown2=IMG_LoadTexture(renderer,"cooldown2.png");
+        png_coin=IMG_LoadTexture(renderer,"coin.png");
+        png_up=IMG_LoadTexture(renderer,"up.png");
+    }
+
     while(linh.empty()!=true)linh.pop_back();
     while(enemy_linh.empty()!=true)enemy_linh.pop_back();
-    scroll_pos=0;doi=1;enemy_doi=1;coin=5000;enemy_coin=0;
+    scroll_pos=0;doi=1;enemy_doi=1;coin=5000;enemy_coin=50;
+    cooldownlinh=0;
+    cooldownenemy=0;
     maunhachinh=100;maunhachinh_enemy=100;
+    srand(NULL);
 
 
 
     while(maunhachinh*maunhachinh_enemy>0)
-    {   cout<<enemy_coin++<<endl;
-        maunhachinh_enemy=1000;
-
+    {
+        cooldownlinh--;
+        cooldownenemy--;
+        enemy_coin=enemy_coin+((double)enemy_doi)*dokho/5;
+        if(enemy_coin>=1.3*coinLenDoi[enemy_doi]){
+            maunhachinh_enemy+=maunhachinhmax[enemy_doi]-maunhachinhmax[enemy_doi-1];
+            enemy_coin-=coinLenDoi[enemy_doi];
+            enemy_doi++;
+        }
         SDL_RenderClear(renderer);
 
         event(window,renderer);
         renmap(window,renderer);
         rengamemenu(window,renderer);
         renmaunhachinh(window,renderer);
-
+        AI();
         renenemylinh(window,renderer);
         renlinh(window,renderer);
 
@@ -586,7 +706,7 @@ void loopgame(SDL_Window* window,SDL_Renderer* renderer)
         SDL_FlushEvent(SDLK_ESCAPE);
         SDL_FlushEvent(SDL_MOUSEMOTION);
         SDL_FlushEvent(SDL_MOUSEBUTTONDOWN);
-        SDL_Delay(3);
+        SDL_Delay(33);
     }
     SDL_DestroyTexture(bg);
 }
