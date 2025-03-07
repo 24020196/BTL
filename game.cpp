@@ -17,6 +17,7 @@ int skill_x[9]={0,-5,5,0,-5,5,-5,0,5},skill_y[9]={0,0,5,-5,5,0,-5,5,-5},skill_te
 
 SDL_Texture *png_cooldown2,*png_cooldown1,*png_coin,*png_up,*png_gamebg,*png_gamemenu,*png_L1,*png_L2,*png_L3;
 SDL_Texture *png_0,*png_1,*png_2,*png_3,*png_4,*png_5,*png_6,*png_7,*png_8,*png_9;
+SDL_Texture *png_skill,*png_meteor;
 SDL_Rect rect,rect1,r;
 struct info
 {
@@ -31,7 +32,7 @@ struct info
     int coin;
 };
 info mouse;
-vector<info> linh,enemy_linh;
+vector<info> linh,enemy_linh,skill;
 
 void game_khoitao(SDL_Window* window,SDL_Renderer* renderer)
 {
@@ -46,6 +47,9 @@ void game_khoitao(SDL_Window* window,SDL_Renderer* renderer)
     png_7=IMG_LoadTexture(renderer,"7.png");
     png_8=IMG_LoadTexture(renderer,"8.png");
     png_9=IMG_LoadTexture(renderer,"9.png");
+    png_skill=IMG_LoadTexture(renderer,"skillD1.png");
+    png_meteor=IMG_LoadTexture(renderer,"meteor.png");
+
 
     string st="D1L1.png";
     png_L1=IMG_LoadTexture(renderer,st.c_str());
@@ -260,9 +264,42 @@ void button_Lendoi(SDL_Window* window,SDL_Renderer* renderer)
     }
 }
 
-void button_skill(SDL_Window* window,SDL_Renderer* renderer)
+void button_skill()
 {
-    if(skill_cooldown<=0)skill_temp=151;
+    if(mouse.x>=1320&&mouse.x<=1480)
+    if(mouse.y>=135&&mouse.y<=195){
+        skill_temp=151;
+        info temp;
+        for(int i=0;i>=-3600;i-=180){
+            temp.y=i;
+            temp.x=rand()%1900+132;
+            skill.push_back(temp);
+        }
+    }
+}
+void renskill(SDL_Window* window,SDL_Renderer* renderer)
+{
+    if(!skill.empty())
+    for(int i=0;i<skill.size();i++)
+    {
+        info &temp=skill.at(i);
+        temp.y+=30;
+        rect.x=temp.x+skill_x[max(skill_temp%9,0)]-scroll_pos;
+        rect.y=temp.y+skill_y[max(skill_temp%9,0)];
+        rect.w=40;
+        rect.h=60;
+        SDL_RenderCopy(renderer,png_meteor,NULL,&rect);
+        if(temp.y>600){
+            skill.erase(skill.begin()+i);
+            i--;
+        }
+        for(int j=0;j<enemy_linh.size();j++)
+        {
+            if(temp.x+60==enemy_linh.at(i).x)
+
+        }
+    }
+
 
 }
 
@@ -279,6 +316,7 @@ void event(SDL_Window* window,SDL_Renderer* renderer)
                     button_L2(window,renderer);
                     button_L3(window,renderer);
                 }
+                if(skill_cooldown<=0)button_skill();
                 button_Lendoi(window,renderer);
 
                 break;
@@ -377,6 +415,12 @@ void rengamemenu(SDL_Window* window,SDL_Renderer* renderer)
     r.w=25;
     r.h=25;
     renso(window,renderer,r,coin);
+
+    rect.x=1320;
+    rect.y=135;
+    rect.w=160;
+    rect.h=60;
+    SDL_RenderCopy(renderer,png_skill,NULL,&rect);
 
 }
 
@@ -715,8 +759,12 @@ void loopgame(SDL_Window* window,SDL_Renderer* renderer,int &dokho)
         SDL_RenderClear(renderer);
         event(window,renderer);
         renmap(window,renderer);
+
+         renskill(window,renderer);
+
         rengamemenu(window,renderer);
         renmaunhachinh(window,renderer);
+
         AI();
         renlinh(window,renderer);
         renenemylinh(window,renderer);
