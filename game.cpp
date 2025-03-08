@@ -68,6 +68,7 @@ void game_khoitao(SDL_Window* window,SDL_Renderer* renderer)
 
     while(linh.empty()!=true)linh.pop_back();
     while(enemy_linh.empty()!=true)enemy_linh.pop_back();
+    while(skill.empty()!=true)skill.pop_back();
     scroll_pos=0;doi=1;enemy_doi=1;coin=5000;enemy_coin=50;
     enemy_XP=0;
     cooldownlinh=0;
@@ -75,6 +76,7 @@ void game_khoitao(SDL_Window* window,SDL_Renderer* renderer)
     maunhachinh=100;maunhachinh_enemy=100;
     SDL_SetRenderDrawColor( renderer,255, 0, 0,0 );
     skill_temp=0;
+    skill_cooldown=0;
 }
 
 void renso(SDL_Window* window,SDL_Renderer* renderer,SDL_Rect rr,int so)
@@ -269,6 +271,12 @@ void button_Lendoi(SDL_Window* window,SDL_Renderer* renderer)
             st="skillD2.png";
             png_skillbg=IMG_LoadTexture(renderer,st.c_str());
         }
+        if(doi==3){
+            st="bomb.png";
+            png_skill=IMG_LoadTexture(renderer,st.c_str());
+            st="skillD3.png";
+            png_skillbg=IMG_LoadTexture(renderer,st.c_str());
+        }
 
     }
 }
@@ -276,11 +284,11 @@ void button_Lendoi(SDL_Window* window,SDL_Renderer* renderer)
 void button_skill()
 {
     if(mouse.x>=1320&&mouse.x<=1480)
-    if(mouse.y>=135&&mouse.y<=195){
-        skill_temp=151;
+    if(mouse.y>=155&&mouse.y<=215){
         skill_cooldown=1800;
         info temp;
         if(doi==1){
+            skill_temp=151;
             temp.dame=40;
             temp.w=40;
             temp.h=60;
@@ -291,8 +299,9 @@ void button_skill()
             }
         }
         if(doi==2){
+            skill_temp=151;
             temp.dame=40;
-            temp.w=20;
+            temp.w=10;
             temp.h=60;
             for(int i=0;i>=-3600;i-=120){
                 temp.y=i;
@@ -300,46 +309,17 @@ void button_skill()
                 skill.push_back(temp);
             }
         }
-
+        if(doi==3){
+            skill_temp=75;
+            temp.dame=40;
+            temp.w=200;
+            temp.h=200;
+            temp.y=-200;
+            temp.x=1000;
+            skill.push_back(temp);
+        }
 
     }
-}
-void renskill(SDL_Window* window,SDL_Renderer* renderer)
-{
-    if(!skill.empty())
-    for(int i=0;i<skill.size();i++)
-    {
-        info &temp=skill.at(i);
-        temp.y+=30;
-        temp.x+=2;
-        rect.x=temp.x+skill_x[max(skill_temp%9,0)]-scroll_pos;
-        rect.y=temp.y+skill_y[max(skill_temp%9,0)];
-        rect.w=temp.w;
-        rect.h=temp.h;
-        SDL_RenderCopy(renderer,png_skill,NULL,&rect);
-        if(temp.y>600){
-            skill.erase(skill.begin()+i);
-            i--;
-        }
-        if(!enemy_linh.empty()&&!skill.empty())
-        for(int j=0;j<enemy_linh.size();j++)
-        {
-            info &templinh=enemy_linh.at(j);
-            if(temp.y+temp.h>=templinh.y)
-            if(temp.x>=templinh.x+(70-temp.w)&&temp.x<=templinh.x+95)
-            templinh.mau-=temp.dame;
-            if(templinh.mau<=0){
-                enemy_linh.erase(enemy_linh.begin()+j);
-                j--;
-                skill.erase(skill.begin()+i);
-                i--;
-                if(enemy_linh.empty())break;
-            }
-        }
-        if(skill.empty())break;
-    }
-
-
 }
 
 void event(SDL_Window* window,SDL_Renderer* renderer)
@@ -373,13 +353,65 @@ void event(SDL_Window* window,SDL_Renderer* renderer)
                 break;
         }
     }
-    if(mouse.y>=200)
+    if(mouse.y>=240)
     if(0<=mouse.x&&mouse.x<=100)scroll_pos=max(scroll_pos-20,0);else
     if(100<mouse.x&&mouse.x<=250)scroll_pos=max(scroll_pos-10,0);else
     if(1400<=mouse.x&&mouse.x<=1500)scroll_pos=min(scroll_pos+20,750);else
     if(1250<=mouse.x&&mouse.x<1400)scroll_pos=min(scroll_pos+10,750);
 }
 
+void renskill(SDL_Window* window,SDL_Renderer* renderer)
+{
+    if(!skill.empty())
+    for(int i=0;i<skill.size();i++)
+    {
+        info &temp=skill.at(i);
+        if(doi==3)temp.y+=15;
+        else{
+            temp.y+=30;
+            temp.x+=2;
+        }
+
+        rect.x=temp.x+skill_x[max(skill_temp%9,0)]-scroll_pos;
+        rect.y=temp.y+skill_y[max(skill_temp%9,0)];
+        rect.w=temp.w;
+        rect.h=temp.h;
+        SDL_RenderCopy(renderer,png_skill,NULL,&rect);
+        if(!enemy_linh.empty()&&!skill.empty())
+        for(int j=0;j<enemy_linh.size();j++)
+        {
+            info &templinh=enemy_linh.at(j);
+            if(temp.y+temp.h>=templinh.y)
+            if(temp.x>=templinh.x+(70-temp.w)&&temp.x<=templinh.x+95)
+            templinh.mau-=temp.dame;
+            if(templinh.mau<=0){
+                coin+=templinh.coin*1.3;
+                enemy_linh.erase(enemy_linh.begin()+j);
+                j--;
+                skill.erase(skill.begin()+i);
+                i--;
+                if(enemy_linh.empty())break;
+            }
+        }
+        if(!skill.empty())
+        if(skill.front().y>650-skill.front().h){
+            skill.erase(skill.begin()+i);
+            i--;
+        }
+        if(skill.empty())break;
+    }else
+    if(doi==3&&skill_temp>0)
+    {
+        SDL_SetRenderDrawColor( renderer,255, 255, 255,255 );
+        SDL_RenderFillRect(renderer, NULL );
+        while(!linh.empty())linh.pop_back();
+        while(!enemy_linh.empty())
+        {
+            coin+=enemy_linh.back().coin*1.3;
+            enemy_linh.pop_back();
+        }
+    }
+}
 
 void renmap(SDL_Window* window,SDL_Renderer* renderer)
 {
@@ -457,14 +489,14 @@ void rengamemenu(SDL_Window* window,SDL_Renderer* renderer)
 
     if(skill_cooldown<=0){
         rect.x=1320;
-        rect.y=135;
+        rect.y=155;
         rect.w=160;
         rect.h=60;
         SDL_RenderCopy(renderer,png_skillbg,NULL,&rect);
     }else
     {
         rect.x=1350;
-        rect.y=145;
+        rect.y=165;
         rect.w=30;
         rect.h=30;
         renso(window,renderer,rect,skill_cooldown/30);
@@ -473,6 +505,7 @@ void rengamemenu(SDL_Window* window,SDL_Renderer* renderer)
 
 void renmaunhachinh(SDL_Window* window,SDL_Renderer* renderer)
 {
+    SDL_SetRenderDrawColor( renderer,255, 0, 0,0 );
     rect.x=20-scroll_pos;
     rect.y=600-300*max(maunhachinh,0)/maunhachinhmax[doi];
     rect.w=30;
@@ -486,7 +519,6 @@ void renmaunhachinh(SDL_Window* window,SDL_Renderer* renderer)
 
     SDL_RenderFillRect( renderer, &rect );
 }
-
 
 void renlinh(SDL_Window* window,SDL_Renderer* renderer)
 {
@@ -781,49 +813,13 @@ void AI()
     }
 }
 
-void loopgame(SDL_Window* window,SDL_Renderer* renderer,int &dokho)
+void endgame(SDL_Window* window,SDL_Renderer* renderer)
 {
-
-    game_khoitao(window,renderer);
-
-    while(maunhachinh*maunhachinh_enemy>0)
-    {
-        enemy_XP++;
-        cooldownlinh--;
-        cooldownenemy--;
-
-        skill_cooldown--;
-        skill_temp--;
-
-
-        enemy_coin=enemy_coin+((double)enemy_doi*(dokho))/10;
-        if(enemy_doi<3&&enemy_XP>=3600){
-            enemy_doi++;
-            maunhachinh_enemy+=maunhachinhmax[enemy_doi]-maunhachinhmax[enemy_doi-1];
-            enemy_XP-=3600;
-
-        }
-        SDL_RenderClear(renderer);
-        event(window,renderer);
-        renmap(window,renderer);
-
-         renskill(window,renderer);
-
-        rengamemenu(window,renderer);
-        renmaunhachinh(window,renderer);
-
-        AI();
-        renlinh(window,renderer);
-        renenemylinh(window,renderer);
-
-        SDL_RenderPresent(renderer);
-        SDL_Delay(30);
-    }
     int x,y;
     SDL_Texture *png_win=IMG_LoadTexture(renderer,"win.png");
     SDL_Texture *png_lose=IMG_LoadTexture(renderer,"lose.png");
     SDL_Texture *png_sword=IMG_LoadTexture(renderer,"sword.png");
-    if(maunhachinh_enemy==0)SDL_RenderCopy(renderer,png_win,NULL,NULL);
+    if(maunhachinh_enemy<=0)SDL_RenderCopy(renderer,png_win,NULL,NULL);
     else SDL_RenderCopy(renderer,png_lose,NULL,NULL);
     SDL_RenderPresent(renderer);
     while(true)
@@ -848,7 +844,7 @@ void loopgame(SDL_Window* window,SDL_Renderer* renderer,int &dokho)
                     rect.w=100;
                     Uint32 buttons = SDL_GetMouseState(&x, &y);
                     SDL_RenderClear(renderer);
-                    if(maunhachinh_enemy==0)SDL_RenderCopy(renderer,png_win,NULL,NULL);
+                    if(maunhachinh_enemy<=0)SDL_RenderCopy(renderer,png_win,NULL,NULL);
                     else SDL_RenderCopy(renderer,png_lose,NULL,NULL);
                     if(x>=500&&x<=1000)
                     {
@@ -893,6 +889,42 @@ void loopgame(SDL_Window* window,SDL_Renderer* renderer,int &dokho)
     SDL_DestroyTexture(png_7);
     SDL_DestroyTexture(png_8);
     SDL_DestroyTexture(png_9);
+}
 
+void loopgame(SDL_Window* window,SDL_Renderer* renderer,int &dokho)
+{
 
+    game_khoitao(window,renderer);
+
+    while(maunhachinh*maunhachinh_enemy>0)
+    {
+        enemy_XP++;
+        cooldownlinh--;
+        cooldownenemy--;
+        skill_cooldown--;
+        skill_temp--;
+
+        enemy_coin=enemy_coin+((double)enemy_doi*(dokho))/10;
+        if(enemy_doi<3&&enemy_XP>=3600){
+            enemy_doi++;
+            maunhachinh_enemy+=maunhachinhmax[enemy_doi]-maunhachinhmax[enemy_doi-1];
+            enemy_XP-=3600;
+
+        }
+        SDL_RenderClear(renderer);
+        event(window,renderer);
+
+        renmap(window,renderer);
+        renmaunhachinh(window,renderer);
+        renskill(window,renderer);
+        rengamemenu(window,renderer);
+
+        AI();
+        renlinh(window,renderer);
+        renenemylinh(window,renderer);
+
+        SDL_RenderPresent(renderer);
+        SDL_Delay(30);
+    }
+    endgame(window,renderer);
 }
