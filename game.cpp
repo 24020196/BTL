@@ -1127,7 +1127,7 @@ void loopgame(SDL_Window* window,SDL_Renderer* renderer,int &dokho)
         cooldownenemy--;
         skill_cooldown--;
         skill_temp--;
-
+        if(enemy_XP%30==0&&dokho==2)coin++;
         enemy_coin=enemy_coin+((double)enemy_doi*(dokho))/10;
         if(enemy_doi<3&&enemy_XP>=2700){
             enemy_doi++;
