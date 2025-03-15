@@ -344,13 +344,13 @@ void button_tangdame(SDL_Window* window,SDL_Renderer* renderer)
     if(mouse.x>=1400&&mouse.x<=1470)
     if(mouse.y>=24&&mouse.y<=94)
     {
-        if(thap_dame==0&&coin>=150)
+        if(thap_dame==0&&coin>=200)
         {
-            coin-=150;
+            coin-=200;
             thap_dame=1;
         }else
-        if(thap_dame==1&&coin>=300){
-            coin-=300;
+        if(thap_dame==1&&coin>=400){
+            coin-=400;
             thap_dame=2;
         }
     }
@@ -445,7 +445,7 @@ void renskill(SDL_Window* window,SDL_Renderer* renderer)
         while(!linh.empty())linh.pop_back();
         while(!enemy_linh.empty())
         {
-            coin+=enemy_linh.back().coin*1.3;
+            coin+=enemy_linh.back().coin*1.2;
             enemy_linh.pop_back();
         }
     }
@@ -524,8 +524,8 @@ void rengamemenu(SDL_Window* window,SDL_Renderer* renderer)
         SDL_RenderCopy(renderer,png_tangdame,NULL,&rect);
         SDL_RenderCopy(renderer,png_coin,NULL,&rect1);
     }
-    if(thap_dame==0)renso(window,renderer,rect1,150);else
-    if(thap_dame==1)renso(window,renderer,rect1,300);
+    if(thap_dame==0)renso(window,renderer,rect1,200);else
+    if(thap_dame==1)renso(window,renderer,rect1,400);
 
     rect.x=514;
     rect1.x=514;
@@ -708,7 +708,7 @@ void renbullet(SDL_Window* window,SDL_Renderer* renderer)
                 //i--;
             }
             if(templinh.mau<=0){
-                coin+=templinh.coin;
+                coin+=templinh.coin*0.5;
                 enemy_linh.erase(enemy_linh.begin()+j);
                 j--;
                 if(enemy_linh.empty())break;
@@ -1121,7 +1121,7 @@ void loopgame(SDL_Window* window,SDL_Renderer* renderer,int &dokho)
     game_khoitao(window,renderer);
     while(maunhachinh*maunhachinh_enemy>0)
     {
-        if(doi>enemy_doi)enemy_XP+=3;else
+        if(doi>enemy_doi)enemy_XP+=2;else
         enemy_XP++;
         cooldownlinh--;
         cooldownenemy--;
@@ -1129,11 +1129,10 @@ void loopgame(SDL_Window* window,SDL_Renderer* renderer,int &dokho)
         skill_temp--;
 
         enemy_coin=enemy_coin+((double)enemy_doi*(dokho))/10;
-        if(enemy_doi<3&&enemy_XP>=3600){
+        if(enemy_doi<3&&enemy_XP>=2700){
             enemy_doi++;
             maunhachinh_enemy+=maunhachinhmax[enemy_doi]-maunhachinhmax[enemy_doi-1];
-            enemy_XP-=3600;
-
+            enemy_XP-=2700;
         }
         SDL_RenderClear(renderer);
         event(window,renderer);
