@@ -15,11 +15,11 @@ int main(int argc, char* argv[])
     SDL_Window  *window;
     SDL_Renderer *renderer;
     initSDL(window, renderer);
+    SDL_Init(SDL_INIT_AUDIO);
+    SDL_AudioSpec wavSpec;
+    Uint32 wavLength;
 
     while(true){
-        SDL_Init(SDL_INIT_AUDIO);
-        SDL_AudioSpec wavSpec;
-        Uint32 wavLength;
         Uint8 *wavBuffer;
         SDL_LoadWAV("music.wav", &wavSpec, &wavBuffer, &wavLength);
         SDL_AudioDeviceID deviceId = SDL_OpenAudioDevice(NULL, 0, &wavSpec, NULL, 0);
