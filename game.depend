@@ -31,3 +31,36 @@
 
 1740408183 c:\users\pc\desktop\game\game\game_button.h
 
+1742179749 source:c:\users\pc\desktop\btl-main\btl-main\game.cpp
+	<iostream>
+	<vector>
+	<SDL.h>
+	<time.h>
+	<cmath>
+	"SDL_image.h"
+	"khoitao.h"
+
+1742057901 c:\users\pc\desktop\btl-main\btl-main\khoitao.h
+
+1742057901 source:c:\users\pc\desktop\btl-main\btl-main\khoitao.cpp
+	<bits/stdc++.h>
+	<SDL.h>
+
+1742060105 source:c:\users\pc\desktop\btl-main\btl-main\main.cpp
+	<bits/stdc++.h>
+	<SDL.h>
+	"SDL_image.h"
+	"khoitao.h"
+	"menu.h"
+	"game.h"
+
+1742057901 c:\users\pc\desktop\btl-main\btl-main\menu.h
+
+1742057901 c:\users\pc\desktop\btl-main\btl-main\game.h
+
+1742057901 source:c:\users\pc\desktop\btl-main\btl-main\menu.cpp
+	<bits/stdc++.h>
+	<SDL.h>
+	"SDL_image.h"
+	"khoitao.h"
+
