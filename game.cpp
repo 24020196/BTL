@@ -380,12 +380,6 @@ void event(SDL_Window* window,SDL_Renderer* renderer)
             }
 
         }
-        switch(e.key.keysym.sym)
-        {
-            case SDLK_ESCAPE:
-               quitSDL(window,renderer);
-                break;
-        }
     }
     if(mouse.y>=240)
     if(0<=mouse.x&&mouse.x<=100)scroll_pos=max(scroll_pos-20,0);else
